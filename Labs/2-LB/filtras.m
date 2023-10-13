@@ -4,7 +4,9 @@
 
 % Hd = FIR_filter_30ord; % example
 clear;
-Hd = lowpassFinal;
+% Hd = lowpassFinal;
+% Hd = highPass;
+Hd = bandpass;
 
 
 Num2 = Hd.Numerator;
