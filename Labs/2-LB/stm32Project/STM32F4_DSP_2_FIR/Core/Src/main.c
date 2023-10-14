@@ -98,10 +98,6 @@ void MX_USB_HOST_Process(void);
 
 /* USER CODE END 0 */
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -154,10 +150,8 @@ int main(void)
       /*** Test Signal generation ***/
         for(int index = 0; index < TEST_LENGTH_SAMPLES; index++)
         {
-        	//366Hz
-      	  //testInput_f32[index] = ( 30000*sin(8*2*PI*index/TEST_LENGTH_SAMPLES) );
-        	//732Hz + 11.6 kHz
-      	  testInput_f32[index] = ( 30000*sin(16*2*PI*index/TEST_LENGTH_SAMPLES) + 15000*sin(254*2*PI*index/TEST_LENGTH_SAMPLES) );
+          // 1kHz + 5kHz + 10 kHz
+      	  testInput_f32[index] = ( 30000*sin(21*2*PI*index/TEST_LENGTH_SAMPLES) + 20000*sin(109*2*PI*index/TEST_LENGTH_SAMPLES) + 15000*sin(220*2*PI*index/TEST_LENGTH_SAMPLES) );
         }
 
       //Call the FIR process function for every blockSize samples
@@ -181,8 +175,6 @@ int main(void)
 
 
   /* USER CODE END 2 */
-
-  /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
