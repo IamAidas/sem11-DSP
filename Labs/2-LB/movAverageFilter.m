@@ -24,3 +24,13 @@ output = filter(num,den,noisy_pulse);
 subplot(2,2,4); plot(n,output);
 ylim([-0.5 1.5]);
 title('Output of 8-Point Moving Avg Filter'); grid
+
+
+
+% 15-point MA Filter:
+num=1/15*ones(1,10); den=zeros(size(num)); den(1)=1;
+output = filter(num,den,noisy_pulse);
+figure()
+plot(n,output);
+ylim([-0.5 1.5]);
+title('Output of 15-Point Moving Avg Filter'); grid
