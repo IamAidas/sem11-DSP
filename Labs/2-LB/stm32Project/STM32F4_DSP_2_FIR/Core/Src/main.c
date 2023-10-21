@@ -96,6 +96,35 @@ void MX_USB_HOST_Process(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
+void MovingAverage_filter(float *inputArray, uint32_t inputSize, uint32_t window, float *outputArray)
+{
+	float Acc = 0; //Accumulator to sum
+	for(uint32_t i = 0; i < inputSize; i++)
+	{
+		//Add new sample to Acc
+		Acc += inputArray[i];
+		//Substract oldest sample
+		if(i >= window)
+			Acc -= inputArray[i - window];
+		//Calculate output sample
+		outputArray[i] = Acc / window;
+	}
+}
+
+
+// White noise generator for noise testing
+float scaled_rand(void)
+{
+    static int32_t a = 100001;
+    a = (a * 125) % 2796203;
+
+    // Scale the output to the desired range [-30000*0.25, 30000*0.25]
+    float scaled_output = ((float)(a % 60001) - 30000.0) * 0.1;
+    return scaled_output;
+}
+
+
 /* USER CODE END 0 */
 
 int main(void)
@@ -109,7 +138,7 @@ int main(void)
 		outputF32 = &testOutput_f32[0];
 
 		//Call FIR init function to initialize the instance structure
-		arm_fir_init_f32(&FiltrasStruct, NUM_TAPS, (float32_t *)&firCoeffs32[0], &firStateF32[0], blockSize);
+		//arm_fir_init_f32(&FiltrasStruct, NUM_TAPS, (float32_t *)&firCoeffs32[0], &firStateF32[0], blockSize);
 
 
   /* USER CODE END 1 */
@@ -150,20 +179,41 @@ int main(void)
       /*** Test Signal generation ***/
         for(int index = 0; index < TEST_LENGTH_SAMPLES; index++)
         {
-          // 1kHz + 5kHz + 10 kHz
-      	  testInput_f32[index] = ( 30000*sin(21*2*PI*index/TEST_LENGTH_SAMPLES) + 20000*sin(109*2*PI*index/TEST_LENGTH_SAMPLES) + 15000*sin(220*2*PI*index/TEST_LENGTH_SAMPLES) );
+          // sin - 1kHz + 5kHz + 10 kHz
+      	  //testInput_f32[index] = ( 30000*sin(21*2*PI*index/TEST_LENGTH_SAMPLES) + 20000*sin(109*2*PI*index/TEST_LENGTH_SAMPLES) + 15000*sin(220*2*PI*index/TEST_LENGTH_SAMPLES) );
+
+      	 // square signal
+      	 if (index < TEST_LENGTH_SAMPLES/2) {
+      	  	testInput_f32[index] = -30000 + scaled_rand();
+      	 } else {
+      		testInput_f32[index] = 30000 + scaled_rand();
+      	 }
+
         }
 
       //Call the FIR process function for every blockSize samples
-        for(int i=0; i<numBlocks; i++)
-        {
-      	  arm_fir_f32(&FiltrasStruct, inputF32 + (i * blockSize), outputF32 + (i * blockSize), blockSize);
-        }
+//        for(int i=0; i<numBlocks; i++)
+//        {
+//      	  arm_fir_f32(&FiltrasStruct, inputF32 + (i * blockSize), outputF32 + (i * blockSize), blockSize);
+//        }
+
+
+
+
+
+        //Test MA filter
+        MovingAverage_filter(testInput_f32, TEST_LENGTH_SAMPLES, 10, testOutput_f32);
+
+
+
+
+
+
 
       /*** Fill Output Buffer ***/
         for(int i = 0; i < TEST_LENGTH_SAMPLES; i++)
         {
-      	  OutputBuffer[i<<1] = (int16_t)testInput_f32[i];			//Left channel - test signal
+      	  //OutputBuffer[i<<1] = (int16_t)testInput_f32[i];			//Left channel - test signal
       	  OutputBuffer[(i<<1)+1] = (int16_t)testOutput_f32[i];		//Right channel - after FIR
         }
 
