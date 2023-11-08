@@ -25,7 +25,7 @@
 //#include "arm_math.h"
 #include "math.h"
 #include "stm32f4_discovery_audio.h"	//BSP
-#include "audio_data.h"					//Audio signal array
+#include "audio_data5.h"					//Audio signal array
 
 /* USER CODE END Includes */
 
@@ -129,10 +129,6 @@ int16_t Tremolo(int16_t InSample)
 
     return (int16_t)OutSampleF;
 }
-
-
-
-
 
 	//LP filter
 	int16_t LP_filter(int16_t InSample)
@@ -630,7 +626,10 @@ static void MX_GPIO_Init(void)
 			//Output_Signal[i] = Distortion(Input_Signal[i]);
 
 			//Echo demo
-			Output_Signal[i] = Echo(Input_Signal[i]);
+			//Output_Signal[i] = Echo(Input_Signal[i]);
+
+			// Tremolo
+			Output_Signal[i] = Tremolo(Input_Signal[i]);
 
 		}
 
@@ -675,7 +674,10 @@ static void MX_GPIO_Init(void)
 			//Output_Signal[i] = Distortion(Input_Signal[i]);
 
 			//Echo demo
-			Output_Signal[i] = Echo(Input_Signal[i]);
+			//Output_Signal[i] = Echo(Input_Signal[i]);
+
+			//Tremolo
+			Output_Signal[i] = Tremolo(Input_Signal[i]);
 		}
 
 		 /*** Fill Output Buffer ***/

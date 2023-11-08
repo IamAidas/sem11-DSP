@@ -41,7 +41,10 @@
 #define BLOCKSIZE 	32
 #define NUMBLOCKS  	(TEST_LENGTH_SAMPLES/BLOCKSIZE)
 
-#define NUM_SECTIONS	2		//number of 2nd order stages in the filter
+//#define NUM_SECTIONS	2		//number of 2nd order stages in the filter
+
+#define NUM_SECTIONS 4
+
 
 /* USER CODE END PD */
 
@@ -74,13 +77,27 @@ float32_t coeffs[5*NUM_SECTIONS] = {0};
 float32_t state[4*NUM_SECTIONS] = {0};
 
 	//IIR filter coeffs
+//float b[NUM_SECTIONS][3] = {
+//{1.27854304E-01, 2.55708609E-01, 1.27854304E-01},
+//{3.04659786E-02, 6.09319571E-02, 3.04659786E-02} };
+//
+//float a[NUM_SECTIONS][3] = {
+//{1.00000000E+00, -1.34913555E+00, 8.60552772E-01},
+//{1.00000000E+00, -1.54190232E+00, 6.63766234E-01} };
+
+
 float b[NUM_SECTIONS][3] = {
-{1.27854304E-01, 2.55708609E-01, 1.27854304E-01},
-{3.04659786E-02, 6.09319571E-02, 3.04659786E-02} };
+{1.66790712E-01, -3.33581424E-01, 1.66790712E-01},
+{1.33825671E-01, -2.67651342E-01, 1.33825671E-01},
+{1.16241827E-01, -2.32483653E-01, 1.16241827E-01},
+{1.08524666E-01, -2.17049332E-01, 1.08524666E-01} };
 
 float a[NUM_SECTIONS][3] = {
-{1.00000000E+00, -1.34913555E+00, 8.60552772E-01},
-{1.00000000E+00, -1.54190232E+00, 6.63766234E-01} };
+{1.00000000E+00, 1.06621340E+00, 7.33376244E-01},
+{1.00000000E+00, 8.55483628E-01, 3.90786313E-01},
+{1.00000000E+00, 7.43078504E-01, 2.08045810E-01},
+{1.00000000E+00, 6.93746382E-01, 1.27845047E-01} };
+
 
 
 /* USER CODE END PV */
@@ -165,9 +182,23 @@ int main(void)
     	/*** Test Signal generation ***/
     	for(int index = 0; index < TEST_LENGTH_SAMPLES; index++)
     	{
-    	  	//Test signal 1000 Hz + 3000 Hz
-    	   	testInput_f32[index] = ( 30000*sin(32*2*PI*index/TEST_LENGTH_SAMPLES) + 15000*sin(96*2*PI*index/TEST_LENGTH_SAMPLES));
+    	  	//Test signal 1000 Hz + 2000 Hz + 3000 Hz
+    	   	//testInput_f32[index] = ( 30000*sin(32*2*PI*index/TEST_LENGTH_SAMPLES) + 20000*sin(64*2*PI*index/TEST_LENGTH_SAMPLES) + 15000*sin(96*2*PI*index/TEST_LENGTH_SAMPLES));
     	}
+
+    	for(int index = 0; index < TEST_LENGTH_SAMPLES; index++)
+    	{
+    		// vienetinis impulsas
+    	    if (index == 10) {
+    	    	testInput_f32[index] = 20000;
+    	    } else {
+    	    	testInput_f32[index] = 0;
+    	    }
+    	}
+
+
+
+
 
     	/*** Perform IIR filtering operation ***/
     	for (k=0; k < NUMBLOCKS; k++)

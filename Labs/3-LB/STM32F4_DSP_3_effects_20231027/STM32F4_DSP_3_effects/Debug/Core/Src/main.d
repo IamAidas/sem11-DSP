@@ -40,7 +40,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/workspace/sem11-DSP/Labs/3-LB/STM32F4_DSP_3_effects_20231027/STM32F4_DSP_3_effects/Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h \
  C:/workspace/sem11-DSP/Labs/3-LB/STM32F4_DSP_3_effects_20231027/STM32F4_DSP_3_effects/Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h \
  C:/workspace/sem11-DSP/Labs/3-LB/STM32F4_DSP_3_effects_20231027/STM32F4_DSP_3_effects/Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
- ../Core/Inc/audio_data.h
+ ../Core/Inc/audio_data5.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -83,4 +83,4 @@ C:/workspace/sem11-DSP/Labs/3-LB/STM32F4_DSP_3_effects_20231027/STM32F4_DSP_3_ef
 C:/workspace/sem11-DSP/Labs/3-LB/STM32F4_DSP_3_effects_20231027/STM32F4_DSP_3_effects/Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h:
 C:/workspace/sem11-DSP/Labs/3-LB/STM32F4_DSP_3_effects_20231027/STM32F4_DSP_3_effects/Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h:
 C:/workspace/sem11-DSP/Labs/3-LB/STM32F4_DSP_3_effects_20231027/STM32F4_DSP_3_effects/Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
-../Core/Inc/audio_data.h:
+../Core/Inc/audio_data5.h:
