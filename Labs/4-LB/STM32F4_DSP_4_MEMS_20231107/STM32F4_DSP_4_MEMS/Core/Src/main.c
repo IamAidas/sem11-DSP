@@ -570,6 +570,8 @@ static void MX_GPIO_Init(void)
     void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
     {
 
+    	// cia reikia iki puses
+
     }
 
 
@@ -577,6 +579,10 @@ static void MX_GPIO_Init(void)
     {
     	//Back to output buffer beginning
     	BSP_AUDIO_OUT_ChangeBuffer((uint16_t*)&OutputBuffer[0], OUTPUT_BUFFER_SIZE);
+
+
+
+    	// efect for other half
 
     	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
     }
