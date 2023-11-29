@@ -37,7 +37,7 @@
 #include "sd_diskio.h"
 
 
-FRESULT res;                                          /* FatFs function common result code */
+FRESULT res;    /* FatFs function common result code */
 FATFS SDFatFs;  /* File system object for SD card logical drive */
 FIL MyFile;     /* File object */
 char newLine[] = "\r\n";
@@ -49,11 +49,7 @@ int index_n=0;
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-
-
-
 /* Private function prototypes -----------------------------------------------*/
-
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -70,7 +66,7 @@ BSP_AUDIO_Init_t MicParams;
 uint16_t PCM_Buffer[AUDIO_CHANNELS * AUDIO_SAMPLING_FREQUENCY / 1000];
 uint16_t PDM_Buffer[AUDIO_CHANNELS * AUDIO_SAMPLING_FREQUENCY / 1000 * 64 / 8];
 
-#define WRITE_EACH 16//ms
+#define WRITE_EACH 16  //ms
 #define SIZE_BUFF (AUDIO_SAMPLING_FREQUENCY / 1000 * AUDIO_CHANNELS * (WRITE_EACH*2))
 
 int16_t Audio_OUT_Buff[SIZE_BUFF];
@@ -330,7 +326,7 @@ int main(void)
 
   HAL_Delay(200);
   DATALOG_SD_Init();
-    HAL_Delay(200);
+  HAL_Delay(200);
 
   /* Configure Audio Input peripheral - I2S*/  
   MicParams.BitsPerSample = 16;
