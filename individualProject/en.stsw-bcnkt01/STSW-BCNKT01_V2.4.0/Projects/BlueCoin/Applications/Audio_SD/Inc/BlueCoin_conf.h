@@ -53,7 +53,7 @@ independentrly from USB functionalities*/
 #define DISABLE_USB_DRIVEN_ACQUISITION
   
 #define AUDIO_CHANNELS 				4
-#define AUDIO_SAMPLING_FREQUENCY 		16000  
+#define AUDIO_SAMPLING_FREQUENCY 		16000
 #define BSP_AUDIO_IN_INSTANCE                   0U   /* Define the audio peripheral used: 0U = I2S */  
 #define BSP_AUDIO_OUT_INSTANCE                  0U   /* Define the audio peripheral used: 0U = SAI */  
 #define AUDIO_VOLUME_INPUT                      64U

@@ -27,6 +27,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "arm_math.h"
+
 
 /* Private defines -----------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +48,9 @@ char SDPath[4]; /* SD card logical drive path */
 static volatile uint8_t BUTTONInterrupt = 0;
 int index_n=0;
 
+//--- IIR structure ---
+arm_biquad_casd_df1_inst_f32 S;
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
@@ -63,6 +68,7 @@ volatile uint8_t cont=0;
 volatile int  index_buff=0;
 
 BSP_AUDIO_Init_t MicParams;
+uint16_t temp_PCM_Buffer[AUDIO_CHANNELS * AUDIO_SAMPLING_FREQUENCY / 1000];
 uint16_t PCM_Buffer[AUDIO_CHANNELS * AUDIO_SAMPLING_FREQUENCY / 1000];
 uint16_t PDM_Buffer[AUDIO_CHANNELS * AUDIO_SAMPLING_FREQUENCY / 1000 * 64 / 8];
 
@@ -84,6 +90,7 @@ static uint32_t WavProcess_HeaderInit()
   uint16_t   BitPerSample=16;
   uint16_t   NbrChannels=AUDIO_CHANNELS;
   uint32_t   ByteRate=AUDIO_SAMPLING_FREQUENCY*(BitPerSample/8);
+  // uint32_t ByteRate = AUDIO_SAMPLING_FREQUENCY * NbrChannels * (BitPerSample/8);
    
   uint32_t   SampleRate=AUDIO_SAMPLING_FREQUENCY;  
   uint16_t   BlockAlign= NbrChannels * (BitPerSample/8);
@@ -202,14 +209,9 @@ void DATALOG_SD_Init(void)
 {
   char SDPath[4];
   
-  if(FATFS_LinkDriver(&SD_Driver, SDPath) == 0)
-  {
-    /* Register the file system object to the FatFs module */
-    if(f_mount(&SDFatFs, (TCHAR const*)SDPath, 0) != FR_OK)
-    {
-      /* FatFs Initialization Error */
-      while(1)
-      {
+  if(FATFS_LinkDriver(&SD_Driver, SDPath) == 0) {
+    if(f_mount(&SDFatFs, (TCHAR const*)SDPath, 0) != FR_OK) {
+      while(1) { // error
         BSP_LED_On(LED1);
         HAL_Delay(500);
         BSP_LED_Off(LED1);
@@ -233,16 +235,14 @@ uint8_t DATALOG_SD_Log_Enable(void)
   
   WavProcess_HeaderInit();
   
-  sprintf(file_name, "%s%.3d%s", "BlueCoin_Log_N", sdcard_file_counter, ".wav");
+  sprintf(file_name, "%s%.3d%s", "Audio_Record_N", sdcard_file_counter, ".wav");
   sdcard_file_counter++;
 
-  if(f_open(&MyFile, (char const*)file_name, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
-  {
+  if(f_open(&MyFile, (char const*)file_name, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) {
     return 0;
   }
   
-  if(f_write(&MyFile, pHeader, sizeof(pHeader), (void *)&byteswritten) != FR_OK)
-  {
+  if(f_write(&MyFile, pHeader, sizeof(pHeader), (void *)&byteswritten) != FR_OK) {
     return 0;
   }
   return 1;
@@ -320,8 +320,14 @@ int main(void)
 
   while(!BSP_SD_IsDetected())
   {
+    // togle some two pins
+    // BSP_LED_Toggle(LED1);
+    // BSP_LED_Toggle(LED2);
+
+
     /* Go to Sleep */
     __WFI();
+
   }
 
   HAL_Delay(200);
@@ -342,27 +348,18 @@ int main(void)
 
   BSP_LED_On(LED2);
   
-  while (1)
-  {
-    if(BUTTONInterrupt)
-    {
+  while (1) {
+    if (BUTTONInterrupt) {
       BUTTONInterrupt = 0;
-      if (SD_Log_Enabled)
-      {
+      if (SD_Log_Enabled) {
         SD_Log_Enabled = 0;
         DATALOG_SD_Log_Disable();
         BSP_LED_Off(LED4);
-      }
-      else
-      {
-        while(SD_Log_Enabled != 1)
-        {
-          if(DATALOG_SD_Log_Enable())
-          {
+      } else {
+        while(SD_Log_Enabled != 1) {
+          if(DATALOG_SD_Log_Enable()) {
             SD_Log_Enabled = 1;
-          }
-          else
-          {
+          } else {
             DATALOG_SD_Log_Disable();
           }
         }
@@ -391,16 +388,14 @@ void SW_Task1_Start(void)
 void SW_Task1_Callback(void)
 { 
   FRESULT s;
-  uint32_t byteswritten;                     /* File write/read counts */
-  
+  uint32_t byteswritten; /* File write/read counts */
   
   /* Check Push Button Event  */
-  if (SD_Log_Enabled)
-  { 
+  if (SD_Log_Enabled) { 
     s=f_write(&MyFile, &(((uint8_t *)Audio_OUT_Buff)[index_buff]), SIZE_BUFF, (void *)&byteswritten);
-    if(s != FR_OK)
+    if(s != FR_OK) {
       BSP_LED_On(LED4);
-    
+    }
   }
 }
 
@@ -412,8 +407,14 @@ void AudioProcess(void)
   static uint16_t OUT_Buff_lvl = 0;
   uint32_t msTick, msTickPrev = 0;
   
-  BSP_AUDIO_IN_PDMToPCM(BSP_AUDIO_IN_INSTANCE,(uint16_t * )PDM_Buffer, PCM_Buffer);
+  BSP_AUDIO_IN_PDMToPCM(BSP_AUDIO_IN_INSTANCE,(uint16_t * )PDM_Buffer, temp_PCM_Buffer);
   
+  // filter
+
+  //temp_PCM_Buffer
+
+  //PCM_Buffer
+
   for (index = 0; index < AUDIO_SAMPLING_FREQUENCY/1000 ; index++)
   {
 
