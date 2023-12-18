@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "stm32f4_discovery_audio.h"
 #include "arm_math.h"
+#include "math.h"
 
 /* USER CODE END Includes */
 
@@ -67,6 +68,31 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 	//*** BSP Audio OUT ***//
 	static int16_t OutputBuffer[OUTPUT_BUFFER_SIZE];		//output signal to BSP_AUDIO_OUT, left+right channels
 	volatile uint32_t ITCounter = 0;						//Counter for the transfer to OutputBuffer
+
+
+	//Distortion
+	int16_t Distortion(int16_t InSample)
+	{
+		float_t OutSample = 0;
+
+		uint16_t high_level = 10000;
+		float_t high_gain = 0.5;
+
+		uint16_t low_level1 = 500;
+		uint16_t low_level2 = 1500;
+		float_t low_gain = 1.0;
+
+		if(abs(InSample) > high_level) OutSample = (float_t)InSample * high_gain;
+		else
+			if((abs(InSample) > low_level1) && (abs(InSample) < low_level2)) OutSample = (float_t)InSample * low_gain;
+			else
+				OutSample = (float_t)InSample;
+
+		return (int16_t)OutSample;
+	}
+
+
+
 
 
 /* USER CODE END PV */
@@ -580,7 +606,16 @@ static void MX_GPIO_Init(void)
     	//Back to output buffer beginning
     	BSP_AUDIO_OUT_ChangeBuffer((uint16_t*)&OutputBuffer[0], OUTPUT_BUFFER_SIZE);
 
-
+//		for(int i = 0; i < OUTPUT_BUFFER_SIZE; i++)
+//		{
+//			//LP filter demo
+//			//Output_Signal[i] = LP_filter(Input_Signal[i]);
+//
+//			//Distortion demo
+//			//OutputBuffer[i] = Distortion(OutputBuffer[i]);
+//
+//
+//		}
 
     	// efect for other half
 
