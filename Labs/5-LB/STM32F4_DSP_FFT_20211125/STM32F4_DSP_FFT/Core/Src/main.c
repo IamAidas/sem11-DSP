@@ -67,6 +67,25 @@ float32_t	FFTPhase[SAMPLES_QTY/2];
 float32_t	FFTPhase_masked[SAMPLES_QTY/2];
 float32_t	OutputSignalArray[SAMPLES_QTY];	//Signal array after inverse FFT
 
+
+
+float32_t generateChirp(float32_t w1, float32_t w2, float32_t A, float32_t M, float32_t time)
+{
+	float32_t res;
+    res=A*cos(w1*time+(w2-w1)*time*time/(2*M));
+    return res;
+}
+
+void countInit(void) {
+    // Configure the DWT cycle counter
+    if (!(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {
+        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+        DWT->CYCCNT = 0;
+    }
+}
+
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -127,13 +146,25 @@ int main(void)
           	Error_Handler();
         }
 
+
+
   		/*** Test Signal generation ***/
   		for(int index = 0; index < SAMPLES_QTY; index++)
   		{
-  		  	//Test signal 1000 Hz + 3000 Hz
-  			//InputArray[index] = ( 20000*sin((FREQUENCY/SAMPLING_FREQ)*2*PI*index) + 10000*sin(3*(FREQUENCY/SAMPLING_FREQ)*2*PI*index) );
-  			//Cos + PI/6 shift
-  			InputArray[index] = ( 20000*cos((FREQUENCY/SAMPLING_FREQ)*2*PI*index + PI/6) );
+//  		  	//Test signal 1000 Hz + 3000 Hz + 5000 Hz
+//  			InputArray[index] = ( 20000*sin((FREQUENCY/SAMPLING_FREQ)*2*PI*index)
+//  			  + 10000*sin(3*(FREQUENCY/SAMPLING_FREQ)*2*PI*index)
+//  			  + 30000*sin(5*(FREQUENCY/SAMPLING_FREQ)*2*PI*index)
+//  			);
+
+
+  			float32_t w1 = (FREQUENCY/SAMPLING_FREQ)*2*PI;
+  			float32_t w2 = 3*(FREQUENCY/SAMPLING_FREQ)*2*PI;
+  			double M = SAMPLES_QTY;
+  				//float32_t generateChirp(float32_t w1, float32_t w2, float32_t A, float32_t M, float32_t time)
+  			InputArray[index] = generateChirp(w1, w2, 3000, M, index);
+
+
   		}
 
   		/*** FFT related functions ***/
@@ -480,6 +511,7 @@ void FFT_calculation(void)
 	}
 }
 
+#if 1 // max filter
 void FFT_filtering(void)
 {
 	//rFFT initialization. Supported FFT Lengths are 32, 64, 128, 256, 512, 1024, 2048, 4096.
@@ -496,6 +528,33 @@ void FFT_filtering(void)
 		arm_rfft_fast_f32(&rFFT_S, FFTOutputArray, OutputSignalArray, 1);	//inverse FFT calculation
 }
 
+#else
+void FFT_filtering(void)
+{
+	float32_t FFTMaxValue;
+	uint32_t MaxIndex;
+	//rFFT initialization. Supported FFT Lengths are 32, 64, 128, 256, 512, 1024, 2048, 4096.
+	arm_rfft_fast_init_f32(&rFFT_S, SAMPLES_QTY);
+	//rFFT process. 0 = RFFT, 1 = RIFFT
+	arm_rfft_fast_f32(&rFFT_S, InputArray, FFTOutputArray, 0);//direct FFT calculation
+	//Calculate the Magnitude
+	arm_cmplx_mag_f32(FFTOutputArray, FFTMagnitude, SAMPLES_QTY/2);
+	//Find max value
+	arm_max_f32(&FFTMagnitude, SAMPLES_QTY/2, &FFTMaxValue, &MaxIndex);
+	//Removing frequencies
+	for(int i=0; i<SAMPLES_QTY; i++)
+		{
+		if(i != (MaxIndex*2)+1)
+			FFTOutputArray[i] = 0;
+		}
+	//Calculate the Magnitude
+	arm_cmplx_mag_f32(FFTOutputArray, FFTMagnitude, SAMPLES_QTY/2);
+	//rFFT process. 0 = RFFT, 1 = RIFFT
+	arm_rfft_fast_f32(&rFFT_S, FFTOutputArray, OutputSignalArray, 1); //inverse FFT calculation
+}
+
+
+#endif
 
 /*** Back to Buffer beginning ***/
 	void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
