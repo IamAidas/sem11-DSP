@@ -1,0 +1,9 @@
+../Core/Src/main.c:83:5:main	4
+../Core/Src/main.c:168:6:SystemClock_Config	3
+../Core/Src/main.c:214:13:MX_I2C1_Init	2
+../Core/Src/main.c:248:13:MX_I2S3_Init	2
+../Core/Src/main.c:282:13:MX_SPI1_Init	2
+../Core/Src/main.c:318:13:MX_DMA_Init	1
+../Core/Src/main.c:336:13:MX_GPIO_Init	1
+../Core/Src/main.c:430:7:BSP_AUDIO_OUT_TransferComplete_CallBack	1
+../Core/Src/main.c:443:6:Error_Handler	1
