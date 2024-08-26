@@ -38,7 +38,7 @@
 #define SAMPLING_FREQ 8000		//BSP_audio_out sampling frequency
 
 
-#define SAMPLES_QTY 32			//Signal buffer for one channel
+#define SAMPLES_QTY 8			//Signal buffer for one channel
 
 /* USER CODE END PD */
 
@@ -132,7 +132,7 @@ int main(void)
 
   */
 /*-------------------------------------------------------------------------------------------------------------*/
-/* TASK1 sine*/
+/* TASK1 sine
 
              for(int index = 0; index < SAMPLES_QTY; index++)
              {
@@ -144,12 +144,23 @@ int main(void)
 
 //TASK 1 DONE*/
 /* =============================================================================================================*/
+/*-------------------------------------------------------------------------------------------------------------*/
+//TASK2 squere
+  int16_t Square_Wave[SAMPLES_QTY];
 
+  for (int index =0; index<SAMPLES_QTY/2; index++)
+  {
+	  Square_Wave[index]=20000;
+	  Square_Wave[(index + (SAMPLES_QTY/2))] = -20000;
+  }
+
+
+/* =============================================================================================================*/
   /*** Fill Output Buffer ***/
        for(int i = 0; i < SAMPLES_QTY; i++)
        {
-       	  OutputBuffer[i<<1] = Left_out_buffer[i];
-       	  OutputBuffer[(i<<1)+1] = Right_out_buffer[i];
+       	  OutputBuffer[i<<1] = Square_Wave[i];
+       	  OutputBuffer[(i<<1)+1] = Square_Wave[i];
        }
 
 
