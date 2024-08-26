@@ -34,7 +34,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define FREQ 1000				//Sine signal frequency
 #define SAMPLING_FREQ 8000		//BSP_audio_out sampling frequency
+
+
 #define SAMPLES_QTY 32			//Signal buffer for one channel
 
 /* USER CODE END PD */
@@ -119,13 +122,28 @@ int main(void)
         }
 
 
-  /*** Test Signal generation ***/
+  /*** Test Signal generation ***/ // ORG
+  /*
        for(int index = 0; index < SAMPLES_QTY; index++)
        {
        	  Left_out_buffer[index] = (int16_t)(30000*sin(2*PI*index/SAMPLES_QTY));
        	  Right_out_buffer[index] = (int16_t)(30000*sin(4*2*PI*index/SAMPLES_QTY));
        }
 
+  */
+/*-------------------------------------------------------------------------------------------------------------*/
+/* TASK1 sine*/
+
+             for(int index = 0; index < SAMPLES_QTY; index++)
+             {
+            	 double phase = 2*PI*FREQ*index/(2*SAMPLING_FREQ);
+
+             	 // Left_out_buffer[index] = (int16_t)(30000*sin(phase));	//For faster testing main freq/2
+            	 Right_out_buffer[index] = (int16_t)(30000*sin(2*phase));
+             }
+
+//TASK 1 DONE*/
+/* =============================================================================================================*/
 
   /*** Fill Output Buffer ***/
        for(int i = 0; i < SAMPLES_QTY; i++)
